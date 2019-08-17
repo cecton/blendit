@@ -24,17 +24,16 @@ pub fn process<F>(img: ImageBuffer, txt: &str, font: &Font, inc: F) -> ImageBuff
 where
     F: Fn() -> (),
 {
-    let mut txt_it = txt.chars();
     let mut out = image::RgbImage::new(img.width() * font.size, img.height() * font.size);
+    let mut txt_it = txt
+        .chars()
+        .chain(" ".chars())
+        .map(|x| x.to_string())
+        .collect::<Vec<_>>()
+        .into_iter()
+        .cycle();
 
-    for (x, y, rgb) in img.enumerate_pixels() {
-        let c = match txt_it.next() {
-            Some(val) => val.to_string(),
-            None => {
-                txt_it = txt.chars();
-                String::from(" ")
-            }
-        };
+    for ((x, y, rgb), c) in img.enumerate_pixels().zip(txt_it) {
         imageproc::drawing::draw_text_mut(
             &mut out,
             *rgb,
