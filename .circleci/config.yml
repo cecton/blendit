@@ -43,11 +43,21 @@ jobs:
       - run:
           name: Run benchmark
           command: |
-            cp comment_bench_on_github.sh /tmp/
-            cargo bench | grep bench: > after
-            git reset --hard origin/master
-            cargo bench | grep bench: > before
-            /tmp/comment_bench_on_github.sh
+            (
+              echo '### Benchmark Results'
+              echo
+              echo 'After:'
+              echo '```none'
+              cargo bench | grep bench:
+              echo '```'
+              git reset --hard origin/master > /dev/null
+              echo
+              echo 'Before:'
+              echo '```none'
+              cargo bench | grep bench:
+              echo '```'
+            ) > /tmp/comment
+            curl -sSL https://gist.githubusercontent.com/cecton/538ce1a6e0b645bd6cbbecf6ccf51366/raw/de93dfdf7182c07eebbfa258ca5a38a0c8149e01/circleci_comment_on_github.sh | sh -
       - save_cache:
           key: benchmark-registry-v1-{{ .Branch }}-{{ .Revision }}
           paths:
