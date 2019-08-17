@@ -25,7 +25,7 @@ where
     F: Fn() -> (),
 {
     let mut out = image::RgbImage::new(img.width() * font.size, img.height() * font.size);
-    let mut txt_it = txt
+    let txt_it = txt
         .chars()
         .chain(" ".chars())
         .map(|x| x.to_string())
